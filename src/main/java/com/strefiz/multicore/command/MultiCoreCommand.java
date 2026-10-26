@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The command is a thin shell: all text comes from {@link StatusFormatter} so it stays testable,
  * and all state comes from {@link StatusSource} so it stays decoupled from the modules.
+ *
+ * <p>Every command result is logged to the server console so admins can see it without being in-game.
  */
 public final class MultiCoreCommand {
 
@@ -34,17 +36,36 @@ public final class MultiCoreCommand {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, StatusSource source) {
 		LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("multicore")
 				.then(Commands.literal("status")
-						.executes(context -> send(context.getSource(), StatusFormatter.status(source))))
+						.executes(context -> {
+							String text = StatusFormatter.status(source);
+							logAndSend(context.getSource(), text);
+							return 1;
+						}))
 				.then(Commands.literal("compat")
-						.executes(context -> send(context.getSource(), StatusFormatter.compat(source.compatSummary()))))
+						.executes(context -> {
+							String text = StatusFormatter.compat(source.compatSummary());
+							logAndSend(context.getSource(), text);
+							return 1;
+						}))
 				.then(Commands.literal("compat")
 						.then(Commands.literal("dump")
-								.executes(context -> send(context.getSource(),
-										StatusFormatter.compatDump(source.compatDump())))))
+								.executes(context -> {
+									String text = StatusFormatter.compatDump(source.compatDump());
+									logAndSend(context.getSource(), text);
+									return 1;
+								})))
 				.then(Commands.literal("regions")
-						.executes(context -> send(context.getSource(), StatusFormatter.regions(source.regionSummary()))))
+						.executes(context -> {
+							String text = StatusFormatter.regions(source.regionSummary());
+							logAndSend(context.getSource(), text);
+							return 1;
+						}))
 				.then(Commands.literal("reload")
-						.executes(context -> send(context.getSource(), StatusFormatter.reloadWarning())));
+						.executes(context -> {
+							String text = StatusFormatter.reloadWarning();
+							logAndSend(context.getSource(), text);
+							return 1;
+						}));
 		dispatcher.register(root);
 	}
 
@@ -58,16 +79,13 @@ public final class MultiCoreCommand {
 				register(dispatcher, source));
 	}
 
-	private static int send(CommandSourceStack source, String text) {
-		try {
-			for (String line : text.split("\n", -1)) {
-				source.sendSystemMessage(Component.literal(line));
-			}
-			return 1;
-		} catch (Throwable t) {
-			LOGGER.error("Error executing /multicore command", t);
-			source.sendSystemMessage(Component.literal("MultiCore: internal error — see server log."));
-			return 0;
+	/**
+	 * Sends the text to the player and logs it to the server console.
+	 */
+	private static void logAndSend(CommandSourceStack source, String text) {
+		LOGGER.info("[MultiCore] " + text.replace("\n", " | "));
+		for (String line : text.split("\n", -1)) {
+			source.sendSystemMessage(Component.literal(line));
 		}
 	}
 }

@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
  * <p>Uses {@link net.fabricmc.api.ModInitializer} (common entrypoint) so it runs on dedicated
  * and integrated servers. Permission checks use the 26.3 {@link net.minecraft.server.players.PlayerList}
  * API.
+ *
+ * <p>Every command result is logged to the server console so admins can see it without being in-game.
  */
 public class StressMod implements ModInitializer {
 
@@ -149,28 +151,36 @@ public class StressMod implements ModInitializer {
 		MinecraftServer server = source.getServer();
 		ServerLevel level = server.overworld();
 		this.spawner.spawnDense(level, count);
-		source.sendSystemMessage(Component.literal("Spawning " + count + " entities densely. Pending: " + this.spawner.pendingEntities()));
+		String msg = "Spawning " + count + " entities densely. Pending: " + this.spawner.pendingEntities();
+		LOGGER.info("[StressMod] " + msg);
+		source.sendSystemMessage(Component.literal(msg));
 	}
 
 	private void spawnClusters(CommandSourceStack source, int clusters, int perCluster, int spacing) {
 		MinecraftServer server = source.getServer();
 		ServerLevel level = server.overworld();
 		this.spawner.spawnClusters(level, clusters, perCluster, spacing);
-		source.sendSystemMessage(Component.literal("Spawning " + clusters + " clusters of " + perCluster +
-				" entities, spacing=" + spacing + ". Pending: " + this.spawner.pendingEntities()));
+		String msg = "Spawning " + clusters + " clusters of " + perCluster +
+				" entities, spacing=" + spacing + ". Pending: " + this.spawner.pendingEntities();
+		LOGGER.info("[StressMod] " + msg);
+		source.sendSystemMessage(Component.literal(msg));
 	}
 
 	private void clearEntities(CommandSourceStack source) {
 		MinecraftServer server = source.getServer();
 		ServerLevel level = server.overworld();
 		this.spawner.clearAll(level);
-		source.sendSystemMessage(Component.literal("Cleared all stress entities."));
+		String msg = "Cleared all stress entities.";
+		LOGGER.info("[StressMod] " + msg);
+		source.sendSystemMessage(Component.literal(msg));
 	}
 
 	private void showStatus(CommandSourceStack source) {
-		source.sendSystemMessage(Component.literal("Stress status: " + this.spawner.describe() +
+		String msg = "Stress status: " + this.spawner.describe() +
 				" | alive=" + this.spawner.aliveCount() +
-				" | forced chunks=" + this.spawner.forcedChunkCount()));
+				" | forced chunks=" + this.spawner.forcedChunkCount();
+		LOGGER.info("[StressMod] " + msg);
+		source.sendSystemMessage(Component.literal(msg));
 	}
 
 	private void generateChunks(CommandSourceStack source, int radius) {
