@@ -14,6 +14,10 @@ import com.strefiz.multicore.config.ConfigStore;
 import com.strefiz.multicore.config.MultiCoreConfig;
 import com.strefiz.multicore.metrics.MetricsRollup;
 import com.strefiz.multicore.metrics.TickMetrics;
+import com.strefiz.multicore.region.Region;
+import com.strefiz.multicore.region.RegionMessageQueue;
+import com.strefiz.multicore.region.RegionScheduler;
+import com.strefiz.multicore.region.RegionSection;
 import com.strefiz.multicore.thread.MainThread;
 import com.strefiz.multicore.thread.OffloadRegistry;
 import com.strefiz.multicore.thread.Safety;
@@ -70,6 +74,7 @@ public class MultiCoreMod implements ModInitializer, StatusSource, MultiCoreComp
 	private ModCompatibility compat;
 	private LegacyHandoff legacyHandoff;
 	private ThreadChecker threadChecker = ThreadChecker.debug(false);
+	private RegionScheduler regionScheduler;
 
 	@Override
 	public void onInitialize() {
@@ -93,6 +98,7 @@ public class MultiCoreMod implements ModInitializer, StatusSource, MultiCoreComp
 		legacyHandoff = LegacyHandoff.create();
 		MultiCoreCompat.setHandler(this);
 		threadChecker = ThreadChecker.debug(config.debug());
+		regionScheduler = new RegionScheduler(pool, scheduler, threadChecker);
 		pool.start();
 
 		if (config.multithreaded()) {
@@ -115,6 +121,9 @@ public class MultiCoreMod implements ModInitializer, StatusSource, MultiCoreComp
 	private void onEndTick(MinecraftServer server) {
 		if (scheduler != null) {
 			scheduler.drainToMain();
+		}
+		if (regionScheduler != null) {
+			regionScheduler.awaitBarrier();
 		}
 		if (legacyHandoff != null) {
 			legacyHandoff.drainToMain();
@@ -178,6 +187,14 @@ public class MultiCoreMod implements ModInitializer, StatusSource, MultiCoreComp
 			text.append(String.format("%n  %s: %s", entry.getKey(), entry.getValue()));
 		}
 		return text.toString();
+	}
+
+	@Override
+	public String regionSummary() {
+		if (regionScheduler == null) {
+			return "";
+		}
+		return regionScheduler.hasTickingRegions() ? "ticking regions active" : "no regions ticking this tick";
 	}
 
 	// --- MultiCoreCompat.Handler implementation ---

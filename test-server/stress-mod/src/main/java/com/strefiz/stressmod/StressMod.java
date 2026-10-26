@@ -1,120 +1,201 @@
 package com.strefiz.stressmod;
 
-import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.players.NameAndId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Stress test mod for MultiCore benchmarking.
  *
  * <p>Spawns entities across multiple chunks to simulate heavy server load, especially useful
  * for testing the MultiCore mod with multiple independent regions.
+ *
+ * <p>Uses {@link net.fabricmc.api.ModInitializer} (common entrypoint) so it runs on dedicated
+ * and integrated servers. Permission checks use the 26.3 {@link net.minecraft.server.players.PlayerList}
+ * API.
  */
-public class StressMod implements DedicatedServerModInitializer {
+public class StressMod implements ModInitializer {
 
 	public static final String MOD_ID = "stress_mod";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	private static final List<Mob> STRESS_ENTITIES = new ArrayList<>();
-	private static final Random RANDOM = new Random();
+	private final SpawnManager spawner = new SpawnManager();
+	private final BenchRunner bench = new BenchRunner();
 
 	@Override
-	public void onInitializeServer() {
+	public void onInitialize() {
 		LOGGER.info("Stress Mod initializing...");
 		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) ->
 				dispatcher.register(Commands.literal("stress")
 						.then(Commands.literal("spawn")
-								.then(Commands.argument("count", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 10000))
-										.executes(context -> spawnEntities(
-												context.getSource(),
-												com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "count")))))
+								.then(Commands.literal("dense")
+										.then(Commands.argument("count", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 100000))
+												.executes(context -> {
+													if (!isOp(context.getSource())) return 0;
+													spawnDense(context.getSource(),
+															com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "count"));
+													return 1;
+												})))
+								.then(Commands.literal("clusters")
+										.then(Commands.argument("n", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 100))
+												.then(Commands.argument("perCluster", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 1000))
+														.then(Commands.argument("spacing", com.mojang.brigadier.arguments.IntegerArgumentType.integer(64, 4096))
+																.executes(context -> {
+																	if (!isOp(context.getSource())) return 0;
+																	spawnClusters(context.getSource(),
+																			com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "n"),
+																			com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "perCluster"),
+																			com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "spacing"));
+																	return 1;
+																}))
+														.executes(context -> {
+															if (!isOp(context.getSource())) return 0;
+															spawnClusters(context.getSource(),
+																	com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "n"),
+																	com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "perCluster"),
+																	1024);
+															return 1;
+														}))))
 						.then(Commands.literal("clear")
-								.executes(context -> clearEntities(context.getSource())))
+								.executes(context -> {
+									if (!isOp(context.getSource())) return 0;
+									clearEntities(context.getSource());
+									return 1;
+								}))
 						.then(Commands.literal("status")
-								.executes(context -> showStatus(context.getSource())))
+								.executes(context -> {
+									if (!isOp(context.getSource())) return 0;
+									showStatus(context.getSource());
+									return 1;
+								}))
 						.then(Commands.literal("chunks")
 								.then(Commands.argument("radius", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 32))
-										.executes(context -> generateChunks(
-												context.getSource(),
-												com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "radius")))))));
+										.executes(context -> {
+											if (!isOp(context.getSource())) return 0;
+											generateChunks(context.getSource(),
+													com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "radius"));
+											return 1;
+										})))
+						.then(Commands.literal("set")
+								.then(Commands.literal("rate")
+										.then(Commands.argument("rate", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 1000))
+												.executes(context -> {
+													if (!isOp(context.getSource())) return 0;
+													spawner.setRate(com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "rate"));
+													context.getSource().sendSystemMessage(Component.literal("Spawn rate set to " + spawner.pendingEntities()));
+													return 1;
+												})))
+								.then(Commands.literal("kind")
+										.then(Commands.argument("kind", com.mojang.brigadier.arguments.StringArgumentType.word())
+												.executes(context -> {
+													if (!isOp(context.getSource())) return 0;
+													spawner.setKind(com.mojang.brigadier.arguments.StringArgumentType.getString(context, "kind"));
+													context.getSource().sendSystemMessage(Component.literal("Mob kind set to " + com.mojang.brigadier.arguments.StringArgumentType.getString(context, "kind")));
+													return 1;
+												})))
+								.then(Commands.literal("noai")
+										.then(Commands.argument("value", com.mojang.brigadier.arguments.BoolArgumentType.bool())
+												.executes(context -> {
+													if (!isOp(context.getSource())) return 0;
+													spawner.setNoAi(com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "value"));
+													context.getSource().sendSystemMessage(Component.literal("No-AI set to " + com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "value")));
+													return 1;
+												}))))
+						.then(Commands.literal("bench")
+								.then(Commands.argument("warmup", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 60))
+										.then(Commands.argument("duration", com.mojang.brigadier.arguments.IntegerArgumentType.integer(5, 300))
+												.executes(context -> {
+													if (!isOp(context.getSource())) return 0;
+													MinecraftServer server = context.getSource().getServer();
+													boolean started = bench.start(server, spawner,
+															com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "warmup"),
+															com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "duration"));
+													if (!started) {
+														context.getSource().sendSystemMessage(Component.literal("Bench could not start (entities still pending spawn)."));
+													} else {
+														context.getSource().sendSystemMessage(Component.literal("Bench started: warmup=" +
+																com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "warmup") +
+																"s, duration=" +
+																com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "duration") + "s"));
+													}
+													return 1;
+												})))
+						.then(Commands.literal("bench")
+								.then(Commands.argument("duration", com.mojang.brigadier.arguments.IntegerArgumentType.integer(5, 300))
+										.executes(context -> {
+											if (!isOp(context.getSource())) return 0;
+											MinecraftServer server = context.getSource().getServer();
+											boolean started = bench.start(server, spawner, 5,
+													com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "duration"));
+											if (!started) {
+												context.getSource().sendSystemMessage(Component.literal("Bench could not start (entities still pending spawn)."));
+											} else {
+												context.getSource().sendSystemMessage(Component.literal("Bench started: warmup=5s, duration=" +
+														com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "duration") + "s"));
+											}
+											return 1;
+										})))
+				));
+
+		// Register tick listeners for the bench
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.START_SERVER_TICK.register(server -> bench.onTickStart());
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> bench.onTickEnd(server));
 	}
 
-	private static int spawnEntities(CommandSourceStack source, int count) {
+	private static boolean isOp(CommandSourceStack source) {
+		if (source.getEntity() == null) return true; // console
+		if (source.getEntity() instanceof net.minecraft.server.level.ServerPlayer player) {
+			NameAndId nameAndId = new NameAndId(player.getGameProfile());
+			return source.getServer().getPlayerList().isOp(nameAndId);
+		}
+		return false;
+	}
+
+	private static void spawnDense(CommandSourceStack source, int count) {
 		MinecraftServer server = source.getServer();
 		ServerLevel level = server.overworld();
-		int spawned = 0;
-
-		for (int i = 0; i < count; i++) {
-			// Random position in a large area (spread out)
-			int x = RANDOM.nextInt(2000) - 1000;
-			int z = RANDOM.nextInt(2000) - 1000;
-			BlockPos pos = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING,
-					new BlockPos(x, 0, z));
-
-			Mob entity = EntityType.ZOMBIE.create(level);
-			if (entity != null) {
-				entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-				level.addFreshEntity(entity);
-				STRESS_ENTITIES.add(entity);
-				spawned++;
-			}
-		}
-
-		source.sendSystemMessage(Component.literal("Spawned " + spawned + " stress entities. Total: " + STRESS_ENTITIES.size()));
-		return 1;
+		spawner.spawnDense(level, count);
+		source.sendSystemMessage(Component.literal("Spawning " + count + " entities densely. Pending: " + spawner.pendingEntities()));
 	}
 
-	private static int clearEntities(CommandSourceStack source) {
-		int removed = 0;
-		for (Mob entity : STRESS_ENTITIES) {
-			if (entity.isAlive()) {
-				entity.discard();
-				removed++;
-			}
-		}
-		STRESS_ENTITIES.clear();
-		source.sendSystemMessage(Component.literal("Removed " + removed + " stress entities."));
-		return 1;
+	private static void spawnClusters(CommandSourceStack source, int clusters, int perCluster, int spacing) {
+		MinecraftServer server = source.getServer();
+		ServerLevel level = server.overworld();
+		spawner.spawnClusters(level, clusters, perCluster, spacing);
+		source.sendSystemMessage(Component.literal("Spawning " + clusters + " clusters of " + perCluster +
+				" entities, spacing=" + spacing + ". Pending: " + spawner.pendingEntities()));
 	}
 
-	private static int showStatus(CommandSourceStack source) {
-		int alive = 0;
-		for (Mob entity : STRESS_ENTITIES) {
-			if (entity.isAlive()) {
-				alive++;
-			}
-		}
-		source.sendSystemMessage(Component.literal("Stress entities: " + alive + " alive / " + STRESS_ENTITIES.size() + " total"));
-		return 1;
+	private static void clearEntities(CommandSourceStack source) {
+		MinecraftServer server = source.getServer();
+		ServerLevel level = server.overworld();
+		spawner.clearAll(level);
+		source.sendSystemMessage(Component.literal("Cleared all stress entities."));
 	}
 
-	private static int generateChunks(CommandSourceStack source, int radius) {
+	private static void showStatus(CommandSourceStack source) {
+		source.sendSystemMessage(Component.literal("Stress status: " + spawner.describe() +
+				" | alive=" + spawner.aliveCount() +
+				" | forced chunks=" + spawner.forcedChunkCount()));
+	}
+
+	private static void generateChunks(CommandSourceStack source, int radius) {
 		MinecraftServer server = source.getServer();
 		ServerLevel level = server.overworld();
 		int generated = 0;
-
-		// Get player positions (or origin if no players)
 		for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
-			ChunkPos center = player.chunkPosition();
+			net.minecraft.world.level.ChunkPos center = player.chunkPosition();
 			for (int dx = -radius; dx <= radius; dx++) {
 				for (int dz = -radius; dz <= radius; dz++) {
-					ChunkPos pos = new ChunkPos(center.x + dx, center.z + dz);
+					net.minecraft.world.level.ChunkPos pos = new net.minecraft.world.level.ChunkPos(center.x + dx, center.z + dz);
 					if (level.getChunkSource().getChunk(pos.x, pos.z, false) == null) {
 						level.getChunkSource().getChunk(pos.x, pos.z, true);
 						generated++;
@@ -122,8 +203,6 @@ public class StressMod implements DedicatedServerModInitializer {
 				}
 			}
 		}
-
 		source.sendSystemMessage(Component.literal("Generated " + generated + " chunks in radius " + radius));
-		return 1;
 	}
 }

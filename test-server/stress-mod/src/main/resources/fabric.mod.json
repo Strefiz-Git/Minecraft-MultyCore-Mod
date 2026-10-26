@@ -8,7 +8,7 @@
   "license": "MIT",
   "environment": "server",
   "entrypoints": {
-    "server": ["com.strefiz.stressmod.StressMod"]
+    "main": ["com.strefiz.stressmod.StressMod"]
   },
   "depends": {
     "fabricloader": ">=0.19.5",
