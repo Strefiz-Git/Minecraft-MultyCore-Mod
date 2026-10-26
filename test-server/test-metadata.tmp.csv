@@ -15,4 +15,4 @@ fabric_versao,0.19.5
 minecraft_versao,26.3
 fabric_api_versao,0.160.5+26.3
 mod_versao,0.1.0
-observacoes,Testes executados em servidor dedicado local (localhost:25565), modo online-mode=false.
+observacoes,"Testes executados em servidor dedicado local (localhost:25565), modo online-mode=false."
