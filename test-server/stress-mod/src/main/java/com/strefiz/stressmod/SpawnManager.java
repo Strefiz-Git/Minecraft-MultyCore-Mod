@@ -1,6 +1,8 @@
 package com.strefiz.stressmod;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -33,7 +35,7 @@ public final class SpawnManager {
 	private final List<ChunkPos> forcedChunks = new ArrayList<>();
 	private int pendingEntities = 0;
 	private int ratePerTick = 20;
-	private EntityType<? extends Mob> kind = EntityType.ZOMBIE;
+	private EntityType<Mob> kind = (EntityType<Mob>) (EntityType<?>) BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.parse("minecraft:zombie"));
 	private boolean noAi = false;
 	private String scenario = "none";
 	private int spawnBatchSize = 20;
@@ -74,14 +76,15 @@ public final class SpawnManager {
 	 * Sets the mob kind.
 	 */
 	public void setKind(String kindName) {
-		switch (kindName.toLowerCase()) {
-			case "zombie" -> this.kind = EntityType.ZOMBIE;
-			case "villager" -> this.kind = EntityType.VILLAGER;
-			case "chicken" -> this.kind = EntityType.CHICKEN;
-			case "cow" -> this.kind = EntityType.COW;
-			case "pig" -> this.kind = EntityType.PIG;
-			default -> this.kind = EntityType.ZOMBIE;
-		}
+		Identifier id = switch (kindName.toLowerCase()) {
+			case "zombie" -> Identifier.parse("minecraft:zombie");
+			case "villager" -> Identifier.parse("minecraft:villager");
+			case "chicken" -> Identifier.parse("minecraft:chicken");
+			case "cow" -> Identifier.parse("minecraft:cow");
+			case "pig" -> Identifier.parse("minecraft:pig");
+			default -> Identifier.parse("minecraft:zombie");
+		};
+		this.kind = (EntityType<Mob>) (EntityType<?>) BuiltInRegistries.ENTITY_TYPE.getValue(id);
 	}
 
 	/**
@@ -156,7 +159,6 @@ public final class SpawnManager {
 				if (noAi) {
 					entity.setNoAi(true);
 				}
-				entity.setInvulnerable(true);
 				// Tag for removal by tag (not static list)
 				entity.addTag("stress");
 				level.addFreshEntity(entity);
@@ -172,8 +174,8 @@ public final class SpawnManager {
 	private void forceChunkArea(ServerLevel level, ChunkPos center, int radius) {
 		for (int dx = -radius; dx <= radius; dx++) {
 			for (int dz = -radius; dz <= radius; dz++) {
-				ChunkPos pos = new ChunkPos(center.x + dx, center.z + dz);
-				level.setChunkForced(pos.x, pos.z, true);
+				ChunkPos pos = new ChunkPos(center.x() + dx, center.z() + dz);
+				level.setChunkForced(pos.x(), pos.z(), true);
 				forcedChunks.add(pos);
 			}
 		}
@@ -184,19 +186,10 @@ public final class SpawnManager {
 	 */
 	public void clearAll(ServerLevel level) {
 		// Remove by tag, not by static list
-		level.getEntities(EntityType.ZOMBIE, e -> e.getTags().contains("stress"),
-				e -> e.discard());
-		level.getEntities(EntityType.VILLAGER, e -> e.getTags().contains("stress"),
-				e -> e.discard());
-		level.getEntities(EntityType.CHICKEN, e -> e.getTags().contains("stress"),
-				e -> e.discard());
-		level.getEntities(EntityType.COW, e -> e.getTags().contains("stress"),
-				e -> e.discard());
-		level.getEntities(EntityType.PIG, e -> e.getTags().contains("stress"),
-				e -> e.discard());
-
-		for (ChunkPos pos : forcedChunks) {
-			level.setChunkForced(pos.x, pos.z, false);
+		for (net.minecraft.world.entity.Entity entity : level.getAllEntities()) {
+			if (entity.entityTags().contains("stress")) {
+				entity.discard();
+			}
 		}
 		forcedChunks.clear();
 		pendingEntities = 0;

@@ -17,8 +17,11 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:26.3"
-    implementation "net.fabricmc:fabric-loader:0.19.5"
-    implementation "net.fabricmc:fabric-api:0.160.5+26.3"
+    implementation files('libs/fabric-api-0.160.5+26.3.jar')
+    implementation files('libs/fabric-loader-0.19.5.jar')
+    implementation files('C:/Users/Strefiz/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-lifecycle-events-v1/4.1.9+ffef5f6702/b30a14f57f94f784daf070681cb67b9f3af89786/fabric-lifecycle-events-v1-4.1.9+ffef5f6702.jar')
+    implementation files('C:/Users/Strefiz/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-api-base/2.0.6+fcdff87f02/90b2b8b5bc37b358493466978f67b1b0191ac49f/fabric-api-base-2.0.6+fcdff87f02.jar')
+    implementation files('C:/Users/Strefiz/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-command-api-v2/3.1.2+fcdff87f02/444754c90d91d74faf55df783762c511049acaef/fabric-command-api-v2-3.1.2+fcdff87f02.jar')
 }
 
 processResources {
