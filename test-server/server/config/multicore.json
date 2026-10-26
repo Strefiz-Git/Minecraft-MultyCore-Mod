@@ -1,0 +1,7 @@
+{
+  "workerThreads": 5,
+  "mode": "SAFE",
+  "debug": false,
+  "modWhitelist": [],
+  "modBlacklist": []
+}
