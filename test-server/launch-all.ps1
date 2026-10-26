@@ -12,6 +12,7 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
+$baseDir = $PSScriptRoot
 
 Write-Host "=== Fluxo Completo: Servidor + 2 Clientes ===" -ForegroundColor Cyan
 Write-Host ""
@@ -19,10 +20,10 @@ Write-Host ""
 # 1. Verificar se servidor já está rodando
 $javaProc = Get-Process -Name "java" -ErrorAction SilentlyContinue
 if ($javaProc) {
-    Write-Host "Servidor já parece estar rodando (processo Java encontrado)." -ForegroundColor Yellow
+    Write-Host "Servidor ja parece estar rodando (processo Java encontrado)." -ForegroundColor Yellow
 } else {
     Write-Host "Iniciando servidor..." -ForegroundColor Green
-    & "$PSScriptRoot\start-server.ps1" -WorkerThreads $WorkerThreads -WithMod $WithMod
+    & (Join-Path $baseDir "start-server.ps1") -WorkerThreads $WorkerThreads -WithMod $WithMod
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Falha ao iniciar o servidor." -ForegroundColor Red
         exit 1
@@ -33,7 +34,7 @@ if ($javaProc) {
 # 2. Lançar clientes
 Write-Host ""
 Write-Host "Lançando clientes..." -ForegroundColor Green
-& "$PSScriptRoot\launch-clients-simple.ps1" -Player1 $Player1 -Player2 $Player2
+& (Join-Path $baseDir "launch-clients-simple.ps1") -Player1 $Player1 -Player2 $Player2
 
 Write-Host ""
 Write-Host "=== PRONTO ===" -ForegroundColor Cyan

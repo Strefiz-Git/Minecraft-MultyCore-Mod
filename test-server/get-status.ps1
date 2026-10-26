@@ -11,7 +11,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$dir = $PSScriptRoot
+$baseDir = $PSScriptRoot
+$serverDir = Join-Path $baseDir "server"
 
 $p = Get-Process -Name "java" -ErrorAction SilentlyContinue
 if (-not $p) {
@@ -26,4 +27,4 @@ $stdin.Flush()
 Start-Sleep -Seconds 2
 
 Write-Host "Resultado do comando '$Command':" -ForegroundColor Cyan
-Get-Content "$dir\logs\latest.log" -Tail 15 -ErrorAction SilentlyContinue | Select-String -Pattern "MultiCore|MSPT|ticks|threads|legacy|compatible|An unexpected|error"
+Get-Content (Join-Path $serverDir "logs\latest.log") -Tail 15 -ErrorAction SilentlyContinue | Select-String -Pattern "MultiCore|MSPT|ticks|threads|legacy|compatible|An unexpected|error"

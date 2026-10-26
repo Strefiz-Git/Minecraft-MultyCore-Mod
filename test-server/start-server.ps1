@@ -19,12 +19,13 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$dir = $PSScriptRoot
-$modJar = Join-Path $dir "mods\multicore-0.1.0.jar"
-$configFile = Join-Path $dir "config\multicore.json"
+$baseDir = $PSScriptRoot
+$serverDir = Join-Path $baseDir "server"
+$modJar = Join-Path $baseDir "mods\multicore-0.1.0.jar"
+$configFile = Join-Path $serverDir "config\multicore.json"
 
 Write-Host "=== Minecraft MultiCore — Servidor de Teste ===" -ForegroundColor Cyan
-Write-Host "Diretorio: $dir" -ForegroundColor Cyan
+Write-Host "Diretorio do servidor: $serverDir" -ForegroundColor Cyan
 Write-Host ""
 
 # 1. Garante que nao ha servidor rodando
@@ -46,28 +47,30 @@ if ($WithMod) {
         modWhitelist = @()
         modBlacklist = @()
     } | ConvertTo-Json -Depth 5
-    New-Item -ItemType Directory -Path (Join-Path $dir "config") -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $serverDir "config") -Force | Out-Null
     Set-Content -Path $configFile -Value $config
+    # Copia o mod para a pasta mods do servidor
+    New-Item -ItemType Directory -Path (Join-Path $serverDir "mods") -Force | Out-Null
+    Copy-Item $modJar (Join-Path $serverDir "mods\multicore-0.1.0.jar") -Force
     Write-Host "MOD ATIVO:" -ForegroundColor Green
     Write-Host "  workerThreads = $WorkerThreads  (total de threads = $($WorkerThreads + 1), incluindo a main)" -ForegroundColor Green
     Write-Host "  mode = SAFE (mods legacy ficam na main thread)" -ForegroundColor Green
-}
-else {
-    if (Test-Path $modJar) { Remove-Item $modJar -Force }
-    if (Test-Path $configFile) { Remove-Item $configFile -Force }
-    Write-Host "MOD REMOVIDO — teste vanilla (baseline)" -ForegroundColor Yellow
+} else {
+    Remove-Item (Join-Path $serverDir "mods\multicore-0.1.0.jar") -ErrorAction SilentlyContinue
+    Remove-Item $configFile -ErrorAction SilentlyContinue
+    Write-Host "MOD REMOVIDO - teste vanilla (baseline)" -ForegroundColor Yellow
 }
 
 # 3. Limpa logs antigos
-Remove-Item (Join-Path $dir "logs\latest.log") -ErrorAction SilentlyContinue
-Remove-Item (Join-Path $dir "stdout.log") -ErrorAction SilentlyContinue
-Remove-Item (Join-Path $dir "stderr.log") -ErrorAction SilentlyContinue
+Remove-Item (Join-Path $serverDir "logs\latest.log") -ErrorAction SilentlyContinue
+Remove-Item (Join-Path $serverDir "stdout.log") -ErrorAction SilentlyContinue
+Remove-Item (Join-Path $serverDir "stderr.log") -ErrorAction SilentlyContinue
 
 # 4. Inicia o servidor (escreve em logs/latest.log naturalmente)
 $psi = New-Object System.Diagnostics.ProcessStartInfo
 $psi.FileName = "C:\Program Files\Java\jdk-25.0.4\bin\java.exe"
 $psi.Arguments = "-Xmx$Memory -jar fabric-server-launch.jar --nogui"
-$psi.WorkingDirectory = $dir
+$psi.WorkingDirectory = $serverDir
 $psi.UseShellExecute = $false
 $psi.RedirectStandardInput = $true
 $psi.RedirectStandardOutput = $false
@@ -75,7 +78,7 @@ $psi.RedirectStandardError = $false
 $psi.CreateNoWindow = $true
 $p = [System.Diagnostics.Process]::Start($psi)
 
-Write-Host "`n=== SERVIDOR INICIADO (PID: $($p.Id)) ===" -ForegroundColor Cyan
+Write-Host "SERVIDOR INICIADO (PID: $($p.Id))" -ForegroundColor Cyan
 Write-Host "Conecte os clientes em: localhost:25565" -ForegroundColor Cyan
 Write-Host "Para parar: digite 'stop' no console do servidor, ou rode .\test-server\stop-server.ps1" -ForegroundColor Cyan
 Write-Host ""
@@ -84,8 +87,8 @@ Write-Host ""
 $ready = $false
 $timeout = [DateTime]::Now.AddSeconds(40)
 while (-not $ready -and [DateTime]::Now -lt $timeout) {
-    if (Test-Path (Join-Path $dir "logs\latest.log")) {
-        $content = Get-Content (Join-Path $dir "logs\latest.log") -ErrorAction SilentlyContinue
+    if (Test-Path (Join-Path $serverDir "logs\latest.log")) {
+        $content = Get-Content (Join-Path $serverDir "logs\latest.log") -ErrorAction SilentlyContinue
         if ($content -match "Done \(.*\)! For help") { $ready = $true; break }
     }
     Start-Sleep -Milliseconds 500

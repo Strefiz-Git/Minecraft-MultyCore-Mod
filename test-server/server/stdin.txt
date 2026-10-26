@@ -1,0 +1,4 @@
+﻿multicore status
+multicore compat
+stop
+
