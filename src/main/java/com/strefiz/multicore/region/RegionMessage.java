@@ -29,9 +29,9 @@ public final class RegionMessage<T> {
 	 */
 	public RegionMessage(RegionSection sourceSection, RegionSection targetSection, T payload,
 			Runnable onDeliver) {
-		this.sourceSection = Objects.requireNonNull(sourceSection, "sourceSection");
-		this.targetSection = Objects.requireNonNull(targetSection, "targetSection");
-		this.payload = payload;
+		this.sourceSection = sourceSection; // may be null for same-region delivery
+		this.targetSection = targetSection; // may be null for same-region delivery
+		this.payload = Objects.requireNonNull(payload, "payload");
 		this.onDeliver = onDeliver;
 	}
 

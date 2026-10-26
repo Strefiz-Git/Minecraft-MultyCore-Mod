@@ -8,7 +8,7 @@
 - **Current milestone:** M1 — Infrastructure + safe offload (Phase 3 partially done)
 - **Last update:** 2026-10-22
 - **Build/test health:** ✅ `./gradlew build` green · ✅ `scripts/check.sh` green (10 checks) · ✅ JUnit green
-- **In progress:** T-012 (RegionLocal/runOnRegion) pending; T-023 benchmark go/no-go next
+- **In progress:** T-023 benchmark go/no-go (RegionLocal/runOnRegion done)
 - **Recommended next step:** T-023 — run the M1 benchmark and write the go/no-go report
 - **Blockers / open questions:** Q-001 (Phase 3 approach) and Q-002 (Mod Menu restart flow) are open in `QUESTIONS.md`; they do not block M1/M2/3.
 - **Risks / relevant technical debt:** Phase 3 (regionised tick) can corrupt worlds if rushed — SAFE default, debug instrumentation, determinism tests first (see `docs/RESEARCH.md` §8). SAFE mode protects Fabric-event mods but **not** mixin-based mods (documented). No CPU affinity yet (M4). `DeadlinePolicy` added so world-modifying work is never silently dropped on timeout (see `REVIEW.md` R-002).
@@ -24,6 +24,12 @@
 - **State on exit:** build ✅/❌ · tests ✅/❌ · branch · last commit
 - **Next step:** …
 -->
+
+### 2026-10-22 — Phase 2.3: RegionLocal + runOnRegion
+- **Done:** T-012 — `RegionLocal.create()`/`get(region)`/`set(region, value)` for region-local mod data, `RunOnRegion.runOnRegion(region, task)` to schedule on a region's thread. Unit-tested.  (ref: ROADMAP M2)
+- **Decisions:** none new.
+- **State on exit:** build ✅ · tests ✅ · branch `main` · last commit `feat(region): add cross-region messages + fallback flag`.
+- **Next step:** T-023 — run the M1 benchmark and write the go/no-go report.
 
 ### 2026-10-22 — Phase 3.3: cross-region messages + fallback
 - **Done:** T-016 — `RegionMessage` (cross-region message payload), `RegionMessageQueue` (per-region queue), `Region.messageQueue()` accessor, `Region.isProblematic()`/`markProblematic()`/`clearProblematic()` fallback flag, `RegionScheduler.awaitBarrier()` drains message queues on the main thread. Unit-tested.  (ref: ROADMAP M3)

@@ -52,6 +52,8 @@ Group by **concept**, not by file. _(Empty until the first module is implemented
 | `RegionSection` | `region/RegionSection.java` | `RegionSection(x,z)` · `static fromChunk(chunkX, chunkZ, chunkShift)` | Section coordinate (N×N chunk grid) | yes | — | `Region`, `Regionizer` |
 | `RegionMessage` | `region/RegionMessage.java` | `RegionMessage(source, target, payload, onDeliver)` | Cross-region message payload | yes | — | `RegionMessageQueue` |
 | `RegionMessageQueue` | `region/RegionMessageQueue.java` | `create()` · `enqueue(message)` · `drain()` | Per-region message queue | no | never throws | `Region`, `RegionScheduler` |
+| `RegionLocal` | `compat/RegionLocal.java` | `create()` · `get(region)` · `set(region, value)` | Region-local storage for mod authors | yes | — | `compat` |
+| `RunOnRegion` | `compat/RunOnRegion.java` | `runOnRegion(region, task)` | Schedule task on region owner thread | yes | — | `compat` |
 | `ModMenuIntegration` | `compat/ModMenuIntegration.java` | `implements ModMenuApi` · `getModConfigScreenFactory()` | Expose the config screen to Mod Menu | no | — | Mod Menu |
 
 ## Known duplications (to resolve)
