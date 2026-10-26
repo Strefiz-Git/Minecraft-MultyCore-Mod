@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "stress_mod",
+  "version": "${version}",
+  "name": "Stress Mod",
+  "description": "Auxiliary mod for stress-testing the MultiCore server. Spawns entities and generates chunks.",
+  "authors": ["Strefiz"],
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "server": ["com.strefiz.stressmod.StressMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

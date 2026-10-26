@@ -18,7 +18,7 @@ repositories {
 dependencies {
     minecraft "com.mojang:minecraft:26.3"
     implementation "net.fabricmc:fabric-loader:0.19.5"
-    implementation "net.fabricmc.fabric-api:fabric-api:0.160.5+26.3"
+    implementation "net.fabricmc:fabric-api:fabric-api:0.160.5+26.3"
 }
 
 processResources {

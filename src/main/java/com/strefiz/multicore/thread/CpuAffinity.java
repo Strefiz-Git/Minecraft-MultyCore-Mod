@@ -1,6 +1,5 @@
 package com.strefiz.multicore.thread;
 
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,24 +36,19 @@ public final class CpuAffinity {
 	 */
 	public static boolean pinCurrentThread(int coreIndex) {
 		try {
-			// Try JNA first (optional dependency).
-			Class<?> nativeLibrary = Class.forName("com.sun.jna.Native");
-			// JNA is present; attempt a platform-specific call via reflection.
-			// On Linux we'd call sched_setaffinity; on Windows SetThreadAffinityMask.
-			// For now we just log that JNA is available but we don't have the native binding.
-			LOGGER.info("JNA is available; CPU affinity binding not yet implemented (Phase 4).");
+			Class.forName("com.sun.jna.Native");
+			LOGGER.log(Level.INFO, "JNA is available; CPU affinity binding not yet implemented (Phase 4).");
 			return false;
 		} catch (ClassNotFoundException e) {
-			// JNA not present — print the launcher command instead.
 			String os = System.getProperty("os.name", "").toLowerCase();
 			if (os.contains("win")) {
-				LOGGER.info("CPU affinity: run the JVM with 'start /affinity 0x{0} java ...' " +
-						"(Windows), or use the OS task manager. Core requested: {1}.",
-						Integer.toHexString(1 << coreIndex), coreIndex);
+				LOGGER.log(Level.INFO, String.format("CPU affinity: run the JVM with 'start /affinity 0x%s java ...' " +
+						"(Windows), or use the OS task manager. Core requested: %d.",
+						Integer.toHexString(1 << coreIndex), coreIndex));
 			} else {
-				LOGGER.info("CPU affinity: run the JVM with 'taskset -c {0} java ...' (Linux), " +
-						"or use numactl. Core requested: {1}.",
-						coreIndex, coreIndex);
+				LOGGER.log(Level.INFO, String.format("CPU affinity: run the JVM with 'taskset -c %d java ...' (Linux), " +
+						"or use numactl. Core requested: %d.",
+						coreIndex, coreIndex));
 			}
 			return false;
 		}
@@ -69,13 +63,12 @@ public final class CpuAffinity {
 		int totalThreads = workerThreads + 1;
 		String os = System.getProperty("os.name", "").toLowerCase();
 		if (os.contains("win")) {
-			// Windows: affinity mask for 'totalThreads' cores.
 			int mask = (1 << totalThreads) - 1;
-			LOGGER.info("Windows launch: start /affinity 0x{0} java -jar fabric-server-launch.jar --nogui",
-					Integer.toHexString(mask));
+			LOGGER.log(Level.INFO, String.format("Windows launch: start /affinity 0x%s java -jar fabric-server-launch.jar --nogui",
+					Integer.toHexString(mask)));
 		} else {
-			LOGGER.info("Linux launch: taskset -c 0-{0} java -jar fabric-server-launch.jar --nogui",
-					totalThreads - 1);
+			LOGGER.log(Level.INFO, String.format("Linux launch: taskset -c 0-%d java -jar fabric-server-launch.jar --nogui",
+					totalThreads - 1));
 		}
 	}
 
