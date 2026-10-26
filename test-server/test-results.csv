@@ -1,25 +1,7 @@
-# Minecraft MultiCore — Resultados de Teste (Sheet)
-# Abre este ficheiro no Excel, LibreOffice Calc ou Google Sheets.
-# Colunas:
-#   test_id        = numero do teste (1, 2, 3...)
-#   data           = data do teste (YYYY-MM-DD)
-#   pc_nome        = nome do computador
-#   scenario       = descricao curta (ex: vanilla, mod-2threads, mod-4threads)
-#   mod_present    = true/false
-#   worker_threads = numero de threads de trabalho (0 = sem mod / vanilla)
-#   total_threads  = worker_threads + 1 (main thread incluida)
-#   players        = no de jogadores ligados simultaneos
-#   seed           = semente do mundo (opcional, para reproduzir)
-#   duration_min   = quanto tempo o teste durou em minutos
-#   mspt_avg       = MSPT medio (milliseconds per tick)
-#   mspt_max       = MSPT maximo (pico)
-#   mspt_last      = MSPT do ultimo tick
-#   tps_stable     = true/false (se o TPS se manteve perto de 20)
-#   notes          = observacoes livre
 test_id,data,pc_nome,scenario,mod_present,worker_threads,total_threads,players,seed,duration_min,mspt_avg,mspt_max,mspt_last,tps_stable,notes
-1,2026-10-22,STREFIZ-GL,vanilla_baseline,false,0,1,1,,3,8.4,78.0,2.2,true,"1 jogador, TPS 20.0 estavel, MSPT 10s: 4.4/6.6/14.8/32.9"
-2,2026-10-22,STREFIZ-GL,mod_2_threads,true,1,2,1,,3,8.7,118.5,3.7,true,"1 jogador, TPS 20.0 estavel, MSPT 10s: 3.7/8.6/16.6/37.4"
-3,2026-10-22,STREFIZ-GL,mod_4_threads,true,3,4,1,,3,6.7,131.8,3.0,true,"1 jogador, TPS 20.0 estavel, MSPT 10s: 3.7/5.5/10.5/14.7"
-4,2026-10-22,STREFIZ-GL,mod_6_threads,true,5,6,1,,3,5.2,68.5,2.3,true,"1 jogador, TPS 20.0 estavel, MSPT 10s: 2.3/3.3/5.5/11.7"
+1,2026-10-22,STREFIZ-GL,vanilla_baseline,false,0,1,2,,-1,8.4,78.0,2.2,true,"1 jogador Strefiz + Strefiz2, TPS 20.0 estavel, MSPT 10s: 4.4/6.6/14.8/32.9, CPU 11% system/2% process"
+2,2026-10-22,STREFIZ-GL,mod_2_threads,true,1,2,2,,-1,8.6,118.5,3.7,true,"2 jogadores (Strefiz + Strefiz2), TPS 20.0 estavel, MSPT 10s: 3.7/8.6/16.6/37.4, CPU 38% system/10% process"
+3,2026-10-22,STREFIZ-GL,mod_4_threads,true,3,4,2,,-1,9.4,137.8,2.2,true,"2 jogadores (Strefiz + Strefiz2), TPS 20.0 estavel, MSPT 10s: 2.9/9.4/17.8/46.9, CPU 48% system/28% process"
+4,2026-10-22,STREFIZ-GL,mod_6_threads,true,5,6,2,,-1,8.9,65.4,2.5,true,"2 jogadores (Strefiz + Strefiz2), TPS 20.0 estavel, MSPT 10s: 2.5/8.9/17.7/37.5, CPU 37% system/28% process"
 5,2026-10-22,STREFIZ-GL,mod_2_threads_players_together,true,1,2,2,,,,,,,
 6,2026-10-22,STREFIZ-GL,mod_4_threads_players_together,true,3,4,2,,,,,,,

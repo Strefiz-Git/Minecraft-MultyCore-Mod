@@ -18,7 +18,17 @@ Write for **humans**: what changed for people who use it, not internal details.
 - Phase 3.2: region scheduler (`RegionScheduler`); parallel region ticks on the worker pool + main-thread barrier.
 - Phase 3.3: cross-region messages (`RegionMessage`, `RegionMessageQueue`) drained on the barrier; problematic-region fallback flag on `Region`.
 - Phase 2.3: `RegionLocal` (region-local storage) + `RunOnRegion` (schedule task on region thread); unit-tested.
+- Phase 3.4: determinism/corruption tests (`DeterminismTest`) verifying 0 workers ≡ vanilla, SAFE skips world-state offloads, ordering preserved, barrier waits for all work.
+- Phase 4.1: CPU affinity helper (`CpuAffinity`) — best-effort, prints OS launch commands, never throws.
+- Phase 4.2: client feasibility report (`docs/CLIENT-FEASIBILITY.md`) — recommendation A (server-side only).
+- Phase 5: bilingual documentation (English US + Portuguese PT) — README, docs, test-server.
 - `docs/BENCHMARKS.md` — the measurement plan and the go/no-go point before Phase 3 (D-012).
+- `docs/SPARK-PROFILING.md` — Spark profiling guide.
+- `REVIEW.md` — independent review (R-001, R-002) with 5-wave code review.
+- `test-server/` — test server scripts, plan, stress mod, result sheets.
+- Servidor real testado: mod carrega, comandos funcionam, sem crash. 2 jogadores: MSPT med 8.4→8.9ms (6 threads), max 78→65ms.
+- `scripts/benchmark-compare.sh` — automated benchmark script.
+- `docs/DOCUMENTATION-PLAN.md` — bilingual documentation plan.
 - `REVIEW.md` — an independent review of the M1 code and of an external review (R-001).
 
 ### Changed
