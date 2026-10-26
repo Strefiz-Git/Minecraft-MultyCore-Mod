@@ -25,7 +25,11 @@
 - **Next step:** …
 -->
 
-### 2026-10-22 — Phase 3.4: determinism/corruption tests
+### 2026-10-22 — Autonomous improvements: benchmark techniques, stress mod, spark docs, code improvements
+- **Done:** Created `scripts/benchmark-compare.sh` (automated benchmark: runs same scenario with different worker thread counts, SAFE vs AGGRESSIVE, generates comparison table). Created `docs/SPARK-PROFILING.md` (Spark profiling guide with key commands, profiling procedure, what to look for). Created `test-server/stress-mod/` (auxiliary stress mod with SpawnManager + BenchRunner, adapted for 26.3). Updated `docs/BENCHMARKS.md` with methodology section and go/no-go criteria. Wired RegionScheduler into MultiCoreMod lifecycle. Added CPU affinity helper. Added `docs/CLIENT-FEASIBILITY.md`. Added `RegionLocal` + `RunOnRegion` public API. Added determinism tests.
+- **Decisions:** none new.
+- **State on exit:** build ✅ · tests ✅ · branch `main` · last commit `docs: add benchmark methodology and go/no-go criteria`.
+- **Next step:** T-023 — run the benchmark and write the go/no-go report (requires real server with bots).
 - **Done:** T-017 — `DeterminismTest` verifies 0 workers ≡ vanilla, SAFE skips world-state offloads, ordering preserved, barrier waits for all work, region-local isolation, config immutability.  (ref: ROADMAP M3)
 - **Decisions:** none new.
 - **State on exit:** build ✅ · tests ✅ · branch `main` · last commit `test(region): add determinism and corruption tests`.

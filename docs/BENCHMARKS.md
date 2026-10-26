@@ -65,7 +65,38 @@ appears here**, because each group is an independent region. This is the target 
 | 6 | yes | SAFE | 4 | S-B | | | | |
 | 7 | yes | SAFE | 6 | S-B | | | | |
 
-## Go / no-go (end of Phase 1)
+## Methodology
+
+### Automated benchmark (headless, no human intervention)
+
+The `scripts/benchmark-compare.sh` script automates the full benchmark:
+
+1. **Same world, same seed**: uses the same server directory with the same seed.
+2. **Fixed JVM flags**: `-Xmx2G` (or configurable).
+3. **Fixed scenario**: `dense` (all entities together) or `clusters` (N groups, each PER_CLUSTER entities, spacing SPACING blocks apart).
+4. **Multiple configurations**: vanilla (no mod), SAFE mode with 1/3/5 worker threads.
+5. **Multiple repetitions**: at least 3 runs per configuration (run the script 3 times).
+6. **Warmup**: 5 seconds of warmup before measurement.
+7. **Measurement**: 60 seconds of MSPT sampling.
+8. **Metrics captured**: avg MSPT, p50, p95, p99, max, ticks >50ms, avgCoresBusy, GC activity, heap usage, thread count.
+
+### Results table (auto-generated from JSON)
+
+| Config | Avg MSPT | p50 | p95 | p99 | Max | >50ms | Cores busy | GC (ms) |
+|--------|----------|-----|-----|-----|-----|-------|------------|---------|
+| vanilla | | | | | | | | |
+| SAFE 2 threads | | | | | | | | |
+| SAFE 4 threads | | | | | | | | |
+| SAFE 6 threads | | | | | | | | |
+
+### Go/no-go criteria (end of Phase 1)
+
+After the runs, decide with data:
+
+- If the spread scenario shows **measurable MSPT reduction** (> 20% improvement) with 4+ threads, **proceed to Phase 3**.
+- If the cost is **chunk generation/IO or light**, the mod should **not** duplicate C2ME/Lithium — reconsider scope.
+- If S-B shows no gain, Phase 3 is not worth it for the target hardware; stop and keep M1 as a compatibility/monitoring mod.
+- If AGGRESSIVE mode shows instability (crashes, corruption), keep SAFE as the only mode.
 
 After the runs, decide with data:
 

@@ -90,7 +90,7 @@ public class StressMod implements ModInitializer {
 												.executes(context -> {
 													if (!isOp(context.getSource())) return 0;
 													spawner.setRate(com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "rate"));
-													context.getSource().sendSystemMessage(Component.literal("Spawn rate set to " + spawner.pendingEntities()));
+													context.getSource().sendSystemMessage(Component.literal("Spawn rate set to " + com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "rate")));
 													return 1;
 												})))
 								.then(Commands.literal("kind")
@@ -142,10 +142,8 @@ public class StressMod implements ModInitializer {
 														com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(context, "duration") + "s"));
 											}
 											return 1;
-										})))
-				));
+										}))));
 
-		// Register tick listeners for the bench
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.START_SERVER_TICK.register(server -> bench.onTickStart());
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> bench.onTickEnd(server));
 	}
@@ -191,6 +189,7 @@ public class StressMod implements ModInitializer {
 		MinecraftServer server = source.getServer();
 		ServerLevel level = server.overworld();
 		int generated = 0;
+
 		for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
 			net.minecraft.world.level.ChunkPos center = player.chunkPosition();
 			for (int dx = -radius; dx <= radius; dx++) {
@@ -203,6 +202,7 @@ public class StressMod implements ModInitializer {
 				}
 			}
 		}
+
 		source.sendSystemMessage(Component.literal("Generated " + generated + " chunks in radius " + radius));
 	}
 }
