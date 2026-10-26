@@ -93,7 +93,13 @@ authoritative.
 
 See `docs/RESEARCH.md` §7.3 and §8 for the full, honest risk list.
 
-## Development
+## Tested mods
+
+| Mod | Version | Mode | Status | Notes |
+|-----|---------|------|--------|-------|
+| _None yet_ | | | | Run the benchmark before claiming compatibility. |
+
+See `docs/BENCHMARKS.md` for the measurement procedure.
 
 ```bash
 ./gradlew build          # jar in build/libs/

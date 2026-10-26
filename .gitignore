@@ -54,5 +54,7 @@ test-server/world/
 test-server/world_nether/
 test-server/world_the_end/
 test-server/session.lock
+test-server/test-metadata.tmp.csv
+test-server/test-results.tmp.csv
 .godot/
 .import/
