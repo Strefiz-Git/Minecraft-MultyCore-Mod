@@ -1,21 +1,3 @@
-# Minecraft MultiCore — Resultados de Teste (Sheet)
-# Abre este ficheiro no Excel, LibreOffice Calc ou Google Sheets.
-# Colunas:
-#   test_id        = numero do teste (1, 2, 3...)
-#   data           = data do teste (YYYY-MM-DD)
-#   pc_nome        = nome do computador
-#   scenario       = descricao curta (ex: vanilla, mod-2threads, mod-4threads)
-#   mod_present    = true/false
-#   worker_threads = numero de threads de trabalho (0 = sem mod / vanilla)
-#   total_threads  = worker_threads + 1 (main thread incluida)
-#   players        = no de jogadores ligados simultaneos
-#   seed           = semente do mundo (opcional, para reproduzir)
-#   duration_min   = quanto tempo o teste durou em minutos
-#   mspt_avg       = MSPT medio (milliseconds per tick)
-#   mspt_max       = MSPT maximo (pico)
-#   mspt_last      = MSPT do ultimo tick
-#   tps_stable     = true/false (se o TPS se manteve perto de 20)
-#   notes          = observacoes livre
 test_id,data,pc_nome,scenario,mod_present,worker_threads,total_threads,players,seed,duration_min,mspt_avg,mspt_max,mspt_last,tps_stable,notes
 1,2026-10-22,STREFIZ-GL,vanilla_baseline,false,0,1,2,,,,,,,
 2,2026-10-22,STREFIZ-GL,mod_2_threads,true,1,2,2,,,,,,,
