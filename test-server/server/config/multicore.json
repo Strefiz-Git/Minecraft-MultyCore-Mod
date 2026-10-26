@@ -1,5 +1,5 @@
 {
-  "workerThreads": 5,
+  "workerThreads": 1,
   "mode": "SAFE",
   "debug": false,
   "modWhitelist": [],
