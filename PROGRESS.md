@@ -25,6 +25,12 @@
 - **Next step:** …
 -->
 
+### 2026-10-22 — Phase 3.4: determinism/corruption tests
+- **Done:** T-017 — `DeterminismTest` verifies 0 workers ≡ vanilla, SAFE skips world-state offloads, ordering preserved, barrier waits for all work, region-local isolation, config immutability.  (ref: ROADMAP M3)
+- **Decisions:** none new.
+- **State on exit:** build ✅ · tests ✅ · branch `main` · last commit `test(region): add determinism and corruption tests`.
+- **Next step:** T-023 — run the M1 benchmark and write the go/no-go report.
+
 ### 2026-10-22 — Phase 2.3: RegionLocal + runOnRegion
 - **Done:** T-012 — `RegionLocal.create()`/`get(region)`/`set(region, value)` for region-local mod data, `RunOnRegion.runOnRegion(region, task)` to schedule on a region's thread. Unit-tested.  (ref: ROADMAP M2)
 - **Decisions:** none new.

@@ -2,6 +2,7 @@
 # Este ficheiro guarda as especificacoes do hardware/software onde os testes foram executados.
 # Deve ser preenchido uma vez e guardado junto com test-results.csv.
 
+chave,valor
 data_teste,2026-10-22
 pc_nome,STREFIZ-GL
 sistema_operacional,Microsoft Windows 11 Home

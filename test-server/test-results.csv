@@ -22,4 +22,4 @@ test_id,data,pc_nome,scenario,mod_present,worker_threads,total_threads,players,s
 3,2026-10-22,STREFIZ-GL,mod_4_threads,true,3,4,2,,,,,,,
 4,2026-10-22,STREFIZ-GL,mod_6_threads,true,5,6,2,,,,,,,
 5,2026-10-22,STREFIZ-GL,mod_2_threads_players_together,true,1,2,2,,,,,,,
-6,2026-10-22,STREFIZ-GL,mod_4_threads_players_together,true,3,4,2,,,,,,
+6,2026-10-22,STREFIZ-GL,mod_4_threads_players_together,true,3,4,2,,,,,,,
