@@ -1,0 +1,25 @@
+# Minecraft MultiCore — Resultados de Teste (Sheet)
+# Abre este ficheiro no Excel, LibreOffice Calc ou Google Sheets.
+# Colunas:
+#   test_id        = número do teste (1, 2, 3…)
+#   data           = data do teste (YYYY-MM-DD)
+#   pc_nome        = nome do computador
+#   scenario       = descrição curta (ex: "vanilla", "mod-2threads", "mod-4threads")
+#   mod_present    = true/false
+#   worker_threads = número de threads de trabalho (0 = sem mod / vanilla)
+#   total_threads  = worker_threads + 1 (main thread incluída)
+#   players        = nº de jogadores ligados simultâneos
+#   seed           = semente do mundo (opcional, para reproduzir)
+#   duration_min   = quanto tempo o teste durou em minutos
+#   mspt_avg       = MSPT médio (milliseconds per tick)
+#   mspt_max       = MSPT máximo (pico)
+#   mspt_last      = MSPT do último tick
+#   tps_stable     = true/false (se o TPS se manteve perto de 20)
+#   notes          = observações livre
+test_id,data,pc_nome,scenario,mod_present,worker_threads,total_threads,players,seed,duration_min,mspt_avg,mspt_max,mspt_last,tps_stable,notes
+1,2026-10-22,STREFIZ-GL,vanilla_baseline,false,0,1,2,,,,,,,
+2,2026-10-22,STREFIZ-GL,mod_2_threads,true,1,2,2,,,,,,,
+3,2026-10-22,STREFIZ-GL,mod_4_threads,true,3,4,2,,,,,,,
+4,2026-10-22,STREFIZ-GL,mod_6_threads,true,5,6,2,,,,,,,
+5,2026-10-22,STREFIZ-GL,mod_2_threads_players_together,true,1,2,2,,,,,,,
+6,2026-10-22,STREFIZ-GL,mod_4_threads_players_together,true,3,4,2,,,,,,

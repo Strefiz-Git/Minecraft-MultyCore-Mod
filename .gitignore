@@ -41,5 +41,18 @@ coverage/
 *.log.gz
 logs/
 run/
+# Test server (runtime-generated files are ignored; templates/scripts are kept)
+test-server/logs/
+test-server/stdout.log
+test-server/stderr.log
+test-server/crash-reports/
+test-server/mods/*.jar
+test-server/config/*.json
+test-server/libraries/
+test-server/run/
+test-server/world/
+test-server/world_nether/
+test-server/world_the_end/
+test-server/session.lock
 .godot/
 .import/

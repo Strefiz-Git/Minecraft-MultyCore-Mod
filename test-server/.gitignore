@@ -1,0 +1,16 @@
+# .gitignore da pasta de testes do servidor
+# Arquivos gerados em runtime não devem ser versionados
+
+logs/
+stdout.log
+stderr.log
+crash-reports/
+*.jar
+mods/*.jar
+config/*.json
+libraries/
+run/
+world/
+world_nether/
+world_the_end/
+session.lock
