@@ -246,7 +246,7 @@ test-server/                 # test server + scripts + stress mod + test plan
 | `docs/MODULES.md` | Catalog of reusable modules and functions |
 | `docs/TESTING.md` | Testing strategy and commands |
 | `docs/GLOSSARY.md` | Domain vocabulary |
-| `docs/DESIGN.md` | Design system (Mod Menu screen) |
+| `docs/DOCUMENTATION-PLAN.md` | Documentation plan (bilingual: English US + Portuguese PT) |
 
 ## License
 

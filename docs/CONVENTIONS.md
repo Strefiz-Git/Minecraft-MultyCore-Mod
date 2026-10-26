@@ -35,6 +35,12 @@
 - Docstrings on **everything** exported: what, parameters, return, errors, side effects, example.
 - `README.md` in each module; a line in `docs/MODULES.md` for whatever is reusable.
 - Language: identifiers and docstrings in English; in-game strings in `assets/multicore/lang/{en_us,pt_pt}.json`.
+- **Bilingual docs:** English (US) is the source of truth. User-facing docs (`README.md`, `docs/RESEARCH.md`,
+  `docs/BENCHMARKS.md`, `docs/SPARK-PROFILING.md`, `docs/CLIENT-FEASIBILITY.md`, `test-server/TEST-PLAN.md`)
+  get a Portuguese translation in `docs/pt/` (or `README-pt.md` at root). Contributor/agent-facing docs
+  (`AGENTS.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `MODULES.md`, `TESTING.md`, `GLOSSARY.md`,
+  `DESIGN.md`, `ROADMAP.md`, `TODO.md`, `PROGRESS.md`, `DECISIONS.md`, `QUESTIONS.md`, `BUGS.md`,
+  `REVIEW.md`, `IDEAS.md`, `CHANGELOG.md`) stay English-only. See `docs/DOCUMENTATION-PLAN.md`.
 - Code and docs change in the same commit.
 
 ## Errors and logging
