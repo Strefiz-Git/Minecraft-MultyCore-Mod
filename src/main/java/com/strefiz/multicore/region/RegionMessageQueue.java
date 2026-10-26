@@ -1,7 +1,7 @@
 package com.strefiz.multicore.region;
 
-import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Per-region queue of cross-region messages. Messages are enqueued by any thread and drained by the
@@ -9,10 +9,12 @@ import java.util.Queue;
  *
  * <p>This is Folia's {@link RegionizedTaskQueue} analogue: instead of accessing another region's
  * state directly, you enqueue a message and the owning region applies it on its own thread.
+ *
+ * <p>Uses a {@link ConcurrentLinkedQueue} so enqueuing from worker threads is safe.
  */
 public final class RegionMessageQueue {
 
-	private final Queue<RegionMessage<?>> queue = new ArrayDeque<>();
+	private final Queue<RegionMessage<?>> queue = new ConcurrentLinkedQueue<>();
 
 	private RegionMessageQueue() {
 	}

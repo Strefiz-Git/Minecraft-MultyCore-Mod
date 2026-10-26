@@ -1,7 +1,7 @@
 package com.strefiz.multicore.thread;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Optional CPU-affinity helper.
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public final class CpuAffinity {
 
-	private static final Logger LOGGER = Logger.getLogger("multicore/affinity");
+	private static final Logger LOGGER = LoggerFactory.getLogger("multicore/affinity");
 
 	private CpuAffinity() {
 	}
@@ -37,16 +37,16 @@ public final class CpuAffinity {
 	public static boolean pinCurrentThread(int coreIndex) {
 		try {
 			Class.forName("com.sun.jna.Native");
-			LOGGER.log(Level.INFO, "JNA is available; CPU affinity binding not yet implemented (Phase 4).");
+			LOGGER.info("JNA is available; CPU affinity binding not yet implemented (Phase 4).");
 			return false;
 		} catch (ClassNotFoundException e) {
 			String os = System.getProperty("os.name", "").toLowerCase();
 			if (os.contains("win")) {
-				LOGGER.log(Level.INFO, String.format("CPU affinity: run the JVM with 'start /affinity 0x%s java ...' " +
+				LOGGER.info(String.format("CPU affinity: run the JVM with 'start /affinity 0x%s java ...' " +
 						"(Windows), or use the OS task manager. Core requested: %d.",
 						Integer.toHexString(1 << coreIndex), coreIndex));
 			} else {
-				LOGGER.log(Level.INFO, String.format("CPU affinity: run the JVM with 'taskset -c %d java ...' (Linux), " +
+				LOGGER.info(String.format("CPU affinity: run the JVM with 'taskset -c %d java ...' (Linux), " +
 						"or use numactl. Core requested: %d.",
 						coreIndex, coreIndex));
 			}
@@ -64,10 +64,10 @@ public final class CpuAffinity {
 		String os = System.getProperty("os.name", "").toLowerCase();
 		if (os.contains("win")) {
 			int mask = (1 << totalThreads) - 1;
-			LOGGER.log(Level.INFO, String.format("Windows launch: start /affinity 0x%s java -jar fabric-server-launch.jar --nogui",
+			LOGGER.info(String.format("Windows launch: start /affinity 0x%s java -jar fabric-server-launch.jar --nogui",
 					Integer.toHexString(mask)));
 		} else {
-			LOGGER.log(Level.INFO, String.format("Linux launch: taskset -c 0-%d java -jar fabric-server-launch.jar --nogui",
+			LOGGER.info(String.format("Linux launch: taskset -c 0-%d java -jar fabric-server-launch.jar --nogui",
 					totalThreads - 1));
 		}
 	}

@@ -1,7 +1,7 @@
 package com.strefiz.multicore.compat;
 
-import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
  * state, it enqueues the work here and {@link #drainToMain()} applies it on the main thread before
  * the tick ends.
  *
+ * <p>Uses a {@link ConcurrentLinkedQueue} so enqueuing from worker threads is safe.
+ *
  * <p>This is the safety net that keeps unmodified mods working while the rest of the server uses
  * worker threads.
  */
@@ -21,7 +23,7 @@ public final class LegacyHandoff {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("multicore/legacy");
 
-	private final Queue<Runnable> pending = new ArrayDeque<>();
+	private final Queue<Runnable> pending = new ConcurrentLinkedQueue<>();
 
 	private LegacyHandoff() {
 	}
