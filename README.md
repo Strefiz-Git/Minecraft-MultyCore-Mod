@@ -1,5 +1,7 @@
 # Minecraft MultiCore Mod
 
+[English](README.md) | [Português](README-pt.md)
+
 A **Fabric mod** that lets a normal Minecraft **server** use more than one core — *without*
 breaking the mods that were not written for multithreading.
 
@@ -79,7 +81,7 @@ breaking the mods that were not written for multithreading.
 
 ```jsonc
 {
-  "workerThreads": 1,          // 1 main + 1 worker = 2 threads total; raise for more cores
+  "workerThreads": 1,          // 1 main + 1 worker = 2 threads total; raise it for more cores
   "mode": "SAFE",              // SAFE (default) | AGGRESSIVE
   "modWhitelist": [],          // only these mods may use region threads
   "modBlacklist": [],          // always treat these mods as legacy
@@ -213,7 +215,7 @@ Java 25 toolchain, Gradle 9.8.0 wrapper, Loom 1.17-SNAPSHOT.
 ```
 src/main/java/com/strefiz/multicore/
   MultiCoreMod.java          # entrypoint (ModInitializer, main)
-  config/                    # JSON config + validation
+  config/                    # config JSON + validation
   thread/                    # WorkerPool, TaskScheduler, MainThread, ThreadChecker, CpuAffinity
   metrics/                   # TickMetrics, MetricsRollup
   command/                   # /multicore command + StatusFormatter
@@ -246,7 +248,8 @@ test-server/                 # test server + scripts + stress mod + test plan
 | `docs/MODULES.md` | Catalog of reusable modules and functions |
 | `docs/TESTING.md` | Testing strategy and commands |
 | `docs/GLOSSARY.md` | Domain vocabulary |
-| `docs/DOCUMENTATION-PLAN.md` | Documentation plan (bilingual: English US + Portuguese PT) |
+| `docs/DESIGN.md` | Design system (Mod Menu screen) |
+| `docs/DOCUMENTATION-PLAN.md` | Bilingual documentation plan (EN US + PT PT) |
 
 ## License
 
