@@ -1,0 +1,21 @@
+﻿# Minecraft MultiCore — Metadados do PC de Teste
+# Este ficheiro guarda as especificacoes do hardware/software onde os testes foram executados.
+# Deve ser preenchido uma vez e guardado junto com test-results.csv.
+
+data_teste,2026-10-22
+pc_nome,STREFIZ-GL
+sistema_operacional,Microsoft Windows 11 Home
+versao_so,10.0.26200
+arquitetura,64 bits
+processador,Intel(R) Core(TM) 7 240H
+nucleos_fisicos,10
+processadores_logicos,16
+velocidade_max_mhz,2500
+memoria_total_bytes,34046783488
+memoria_total_gb_aprox,31.6
+java_versao,25.0.12.1 (Temurin)
+fabric_versao,0.19.5
+minecraft_versao,26.3
+fabric_api_versao,0.160.5+26.3
+mod_versao,0.1.0
+observacoes,Testes executados em servidor dedicado local (localhost:25565), modo online-mode=false.
