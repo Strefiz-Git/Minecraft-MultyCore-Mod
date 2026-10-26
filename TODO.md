@@ -16,9 +16,8 @@ _Empty — Phase 3.2 region scheduler done; next is T-023 benchmark go/no-go._
 ## Later
 
 - [ ] T-018 [P3] [M] Phase 4.1 — test on Linux + Windows dedicated servers — acceptance: documented results, no OS-specific crash  (ref: ROADMAP M4)
-- [ ] T-019 [P3] [S] Phase 4.2 — optional CPU affinity — acceptance: flag enables FFM/JNI affinity or prints the correct launcher flags; clear no-op warning  (ref: ROADMAP M4, D-006)
 - [ ] T-020 [P3] [M] Phase 4.3 — README + tested-mods table + `/multicore` subcommands  (ref: ROADMAP M4)
-- [x] T-021 [P3] [M] Phase 5.1 — client feasibility report — acceptance: written report in `docs/CLIENT-FEASIBILITY.md`, no client code merged  (ref: ROADMAP M5)
+- [ ] T-021 [P3] [M] Phase 5.1 — client feasibility report — acceptance: written report in `docs/CLIENT-FEASIBILITY.md`, no client code merged  (ref: ROADMAP M5)
 
 ## Blocked (waiting for the user's answer — see QUESTIONS.md)
 

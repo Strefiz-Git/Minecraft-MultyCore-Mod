@@ -35,6 +35,7 @@ Group by **concept**, not by file. _(Empty until the first module is implemented
 | `MainThread` | `thread/MainThread.java` | `static capture()` · `static boolean isCurrent()` · `static Thread get()` | Identify the server main thread | yes | — | all modules |
 | `TaskScheduler` | `thread/TaskScheduler.java` | `TaskScheduler(WorkerPool, ThreadChecker)` · `submitOffload(Callable, Consumer)` · `submit(Runnable)` · `drainToMain()` | Offload work, **wait for it**, then merge in submission order on the main thread | no | never throws | `MultiCoreMod`, `region` |
 | `ThreadChecker` | `thread/ThreadChecker.java` | `debug(boolean)` · `assertMainThread(String)` · `assertRegionOwner(String, Thread)` | Debug thread-safety warnings | no | never throws | `TaskScheduler`, `MultiCoreMod` |
+| `CpuAffinity` | `thread/CpuAffinity.java` | `pinCurrentThread(int)` · `printLaunchCommand(int)` · `isWindows()` · `isLinux()` | Best-effort CPU affinity (Phase 4) | no | never throws | `MultiCoreMod` (optional) |
 | `OffloadRegistry` | `thread/OffloadRegistry.java` | `OffloadRegistry(TaskScheduler)` · `register(name, safety, work, merge)` · `submitAll(Safety)` | Named offloads filtered by safety level | no | never throws | `MultiCoreMod` |
 | `Safety` | `thread/Safety.java` | `PURE` \| `READ_ONLY` \| `WORLD_STATE` | Contract for how much of the world an offload may touch | yes | — | `OffloadRegistry` |
 | `MetricsRollup` | `metrics/MetricsRollup.java` | `MetricsRollup(TickMetrics)` · `String hottest(int)` | Pure "hottest labels" aggregation | yes | — | `MultiCoreMod` |
